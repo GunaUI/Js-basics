@@ -1,85 +1,84 @@
 # Js-basics
 
-## call Method.
+## Pollyfill for bind method.
 
-```js
-// Here "this" refers to the myname object 
-let myname = {
-    firstname:"Guna",
-    lastname:"M",
-    printFullName: function(){
-        console.log(this.firstname+" "+this.lastname);
-    }
-}
-myname.printFullName();
-//output : Guna M
-```
-* Above code will print full name as "Guna M"
-* In-case if we want print the full name function with new object lets say
+* Pollyfill is sort of a browser fall back, what if suppose your bowser doesn't have bind function.And you have to write your own bind function.
+* Tradional bind function.
 ```js
 let myname2 = {
     firstname:"Aadvik",
     lastname:"Krishna"
 }
-```
-* How to use this new object (myname2) as value in printFullName function, so thats where call method comes into picture.
-* Using call method we can do function borrowing , this concept is known as function borrowing. ie function borrowed from other object and use it with the data of other object.
-
-```js
-// myname2 refers to the object which has data... ie now in printFullName function "this" refers to myname2.
-myname.printFullName.call(myname2)
-// output : Aadvik Krisha
-```
-* similarly for example if we want to call a seperate functio with new data we can like this.
-```js
 let printMyName = function(){
         console.log(this.firstname+" "+this.lastname);
-    }
-    printMyName.call(myname);
-// output : Guna M
-```
-* Incase if we have params for this function example
-
-```js
-let printMyhometown = function(hometown){
-        console.log(this.firstname+" "+this.lastname+" from "+hometown);
-    }
-```
-* how will we pass different paramaters inside this function is the first parameter will be always the reference to "this" variable and the later arguments can be the arguments to the function.
-
-```js
-printMyhometown.call(myname2, "Kovilpatti");
-// output : Aadvik Krishna from Kovilpatti
-```
-* incase if we didn't pass the expecting argument it will show undefined error.
-* suppose our function has more argument lets say along with hometown we need to pass state.
-```js
-let printMystate = function(hometown, state){
-        console.log(this.firstname+" "+this.lastname+" from "+hometown+" , "+ state);
-    }
-    printMystate.call(myname2, "Kovilpatti", "TamilNadu");
-```
-
-## apply Method.
-
-* the only difference between call and apply method is the way we pass arguments , let see how it works.
-
-```js
-printMystate.apply(myname2, ["Kovilpatti", "TamilNadu"]);
-// output : Aadvik Krishna from Kovilpatti , TamilNadu
-```
-* instead of passing the second aguments individually in the call method , here we are passing the arguments as array list
-
-
-## bind Method.
-
-* the bind method looks exactly same as the call method but the only difference is instead of direcly executing the method , it will bind method and return the copy of that method
-
-```js
+}
 // copyPrintMystate will have the binded copy of the function, but not executed value, it will just return the function.
-let copyPrintMystate = printMystate.bind(myname2, "Kovilpatti", "TamilNadu");
+let copyPrintMyName = printMyName.bind(myname2);
 // Once data and function binded we can invoke the refernce copy later.
-copyPrintMystate()
-// output : Aadvik Krishna from Kovilpatti , TamilNadu
+copyPrintMyName()
+// output : Aadvik Krishna 
 ```
-* Note : only difference between call and bind is , bind gives the copy which can be invoked later..
+
+* Our task is to write our own implementation in bind method.
+```js
+// we will discuss Function.protoype in upcomming discussion.. not in this branch!!
+// for just now assume that if we keep any method with Function.protoype and those method can be accessed anywhere...
+Function.prototype.mybind=function(...obj){
+    // our bind method will always return some uninvoked method which will be invoked later...
+    // here "this" refers to the function in which mybind is binded... so through this we can get access to the function which using this method.
+    let myfunc = this;
+    return function(){
+        //...obj refers to the object which is bind to this method 
+        // since we used spred operator here so that we are getting first agrument as obj[0]
+        myfunc.call(obj[0])
+    }
+}
+let myownBindFunction = printMyName.mybind(myname);
+myownBindFunction();
+
+// output : Guna M 
+```
+
+* Suppose we want send some more different argument... how can we do that ..  with the existing mybind fuction is it possible ???  no..
+
+```js
+let printMyHometown = function(hometown){
+        console.log(this.firstname+" "+this.lastname+" from "+ hometown);
+}
+
+Function.prototype.mybind=function(...args){
+    let myfunc = this;
+    // here we are slice ie remove the first argument and the we are returing the rest of the argumet.. in param
+    params = args.slice(1)
+    return function(){
+        // here we changed to apply method instead of call because the param in which we are using is array , call method can't take array but apply method can..
+        myfunc.apply(args[0],params)
+    }
+}
+let myownBindFunction = printMyHometown.mybind(myname, 'Banglore');
+myownBindFunction();
+
+// output : Guna M from Banglore
+```
+
+
+* still problem not solved..in case if we send params while invoking function will it work?? no....
+
+```js
+let printMyState = function(hometown, state){
+        console.log(this.firstname+" "+this.lastname+" from "+ hometown+" , "+ state);
+}
+
+Function.prototype.mybind=function(...args){
+    let myfunc = this;
+    params = args.slice(1)
+    return function(...args2){
+        // here args2 we will get from while we invoking the function..
+        //[...params,...args2] we are concatinating array from mybind and also from while we invoking the function..
+        myfunc.apply(args[0],[...params,...args2])
+    }
+}
+let myownBindFunction = printMyState.mybind(myname, 'Banglore');
+myownBindFunction("Tamilnadu");
+// Output : Guna M from Banglore , Tamilnadu
+```
