@@ -1,84 +1,55 @@
 # Js-basics
 
-## Pollyfill for bind method.
+## Function Currying
 
-* Pollyfill is sort of a browser fall back, what if suppose your bowser doesn't have bind function.And you have to write your own bind function.
-* Tradional bind function.
+### Method 1 - bind method
+
+* Function Currying is we can resuse a single function for many purpose...
+* Here we are presetting argument...
 ```js
-let myname2 = {
-    firstname:"Aadvik",
-    lastname:"Krishna"
+let multiply = function(x,y){
+    console.log(x*y)
 }
-let printMyName = function(){
-        console.log(this.firstname+" "+this.lastname);
-}
-// copyPrintMystate will have the binded copy of the function, but not executed value, it will just return the function.
-let copyPrintMyName = printMyName.bind(myname2);
-// Once data and function binded we can invoke the refernce copy later.
-copyPrintMyName()
-// output : Aadvik Krishna 
+// here we are passing x=2;
+let multiplyByTwo = multiply.bind(this,2)
+// here we are passing y=3
+multiplyByTwo(3);
+// output : 6
 ```
 
-* Our task is to write our own implementation in bind method.
-```js
-// we will discuss Function.protoype in upcomming discussion.. not in this branch!!
-// for just now assume that if we keep any method with Function.protoype and those method can be accessed anywhere...
-Function.prototype.mybind=function(...obj){
-    // our bind method will always return some uninvoked method which will be invoked later...
-    // here "this" refers to the function in which mybind is binded... so through this we can get access to the function which using this method.
-    let myfunc = this;
-    return function(){
-        //...obj refers to the object which is bind to this method 
-        // since we used spred operator here so that we are getting first agrument as obj[0]
-        myfunc.call(obj[0])
-    }
-}
-let myownBindFunction = printMyName.mybind(myname);
-myownBindFunction();
+* Suppose we pass both x and y on bind itself, it will take that value.
+```jsx
+// here we are passing x=2 and y =7
+let multiplyByTwo = multiply.bind(this,2,7)
+// here again we are trying passing y=8
+multiplyByTwo(3);
+//output : 14
+```
+* In the above example it will ignore 3 and it assume y=7 , so first prefernce will be given to binding arguments.
 
-// output : Guna M 
+```js
+let multiplyByeight = multiply.bind(this)
+// here  we are trying passing both x and y
+multiplyByeight(2,8);
+//output : 16
 ```
 
-* Suppose we want send some more different argument... how can we do that ..  with the existing mybind fuction is it possible ???  no..
+### Method 2 - closure method
 
+* This is the simple example for closure... in this function when a new function is return, the retun function has access to X variable even after returning..
+* It is something like presetting x value over return function.
+* In more easy explaination is just imagine we are creating a box in which both x and this return function exist.
 ```js
-let printMyHometown = function(hometown){
-        console.log(this.firstname+" "+this.lastname+" from "+ hometown);
-}
-
-Function.prototype.mybind=function(...args){
-    let myfunc = this;
-    // here we are slice ie remove the first argument and the we are returing the rest of the argumet.. in param
-    params = args.slice(1)
-    return function(){
-        // here we changed to apply method instead of call because the param in which we are using is array , call method can't take array but apply method can..
-        myfunc.apply(args[0],params)
+let multiplyUsingClosure = function(x){
+    return function(y){
+        console.log(x*y);
     }
 }
-let myownBindFunction = printMyHometown.mybind(myname, 'Banglore');
-myownBindFunction();
 
-// output : Guna M from Banglore
-```
+let multiplyByclosure = multiplyUsingClosure(2);
+    multiplyByclosure(5);
+let multiplyByclosureNew = multiplyUsingClosure(2);
+    multiplyByclosureNew(10);
 
-
-* still problem not solved..in case if we send params while invoking function will it work?? no....
-
-```js
-let printMyState = function(hometown, state){
-        console.log(this.firstname+" "+this.lastname+" from "+ hometown+" , "+ state);
-}
-
-Function.prototype.mybind=function(...args){
-    let myfunc = this;
-    params = args.slice(1)
-    return function(...args2){
-        // here args2 we will get from while we invoking the function..
-        //[...params,...args2] we are concatinating array from mybind and also from while we invoking the function..
-        myfunc.apply(args[0],[...params,...args2])
-    }
-}
-let myownBindFunction = printMyState.mybind(myname, 'Banglore');
-myownBindFunction("Tamilnadu");
-// Output : Guna M from Banglore , Tamilnadu
+//output: 10
 ```

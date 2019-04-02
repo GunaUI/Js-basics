@@ -1,75 +1,28 @@
-// ****** Tradional bind function.*****
-let myname = {
-    firstname:"Guna",
-    lastname:"M",
+// Method 1 : Bind method.
+let multiplyUsingBind = function(x,y){
+    console.log(x*y)
 }
 
-let printMyName = function(){
-    console.log(this.firstname+" "+this.lastname);
-}
+let multiplyByTwo = multiplyUsingBind.bind(this,2)
+multiplyByTwo(3);
 
-let copyPrintMystate = printMyName.bind(myname);
+let multiplyBythree = multiplyUsingBind.bind(this,2,7);
+multiplyBythree(8);
 
-copyPrintMystate()
+let multiplyByeight = multiplyUsingBind.bind(this)
+// here again we are trying passing y=8
+multiplyByeight(2,8);
 
-// output : Aadvik Krishna 
+// Method 2 - Closure method.
 
-
-
-// ***** Own bind method ********...
-
-Function.prototype.mybind=function(...obj){
-    let myfunc = this;
-    return function(){
-        myfunc.call(obj[0])
+let multiplyUsingClosure = function(x){
+    return function(y){
+        console.log(x*y);
     }
 }
 
-let myownBindFunction= printMyName.mybind(myname);
-myownBindFunction();
+let multiplyByclosure = multiplyUsingClosure(2);
+    multiplyByclosure(5);
 
-
-
-
-
-// ****** with extra params *******
-
-let printMyHometown = function(hometown){
-        console.log(this.firstname+" "+this.lastname+" from "+ hometown);
-}
-
-Function.prototype.myNewBind=function(...args){
-    let myfunc = this;
-    // here we are slice ie remove the first argument and the we are returing the rest of the argumet.. in param
-    params = args.slice(1)
-    return function(){
-        // here we changed to apply method instead of call because the param in which we are using is array , call method can't take array but apply method can..
-        myfunc.apply(args[0],params)
-    }
-}
-let myownBindWithMoreArgs = printMyHometown.myNewBind(myname, 'Banglore');
-myownBindWithMoreArgs();
-// output : Guna M from Banglore
-
-
-
-
-// ******** Argument while invoking the function...*****
-
-let printMyState = function(hometown, state){
-        console.log(this.firstname+" "+this.lastname+" from "+ hometown+" , "+ state);
-}
-
-Function.prototype.myStatebind=function(...args){
-    let myfunc = this;
-    params = args.slice(1)
-    return function(...args2){
-        // here args2 we will get from while we invoking the function..
-        //[...params,...args2] we are concatinating array from mybind and also from while we invoking the function..
-        myfunc.apply(args[0],[...params,...args2])
-    }
-}
-let myownStateBindFunction = printMyState.myStatebind(myname, 'Banglore');
-myownStateBindFunction("Tamilnadu");
-// Output : Guna M from Banglore , Tamilnadu
-
+let multiplyByclosureNew = multiplyUsingClosure(2);
+    multiplyByclosureNew(10);
