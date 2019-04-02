@@ -1,55 +1,45 @@
 # Js-basics
 
-## Function Currying
+## Debouncing 
+* Suppose if your are searching in a website... if the api call is made on every key press means this will create a major performance issue.
 
-### Method 1 - bind method
-
-* Function Currying is we can resuse a single function for many purpose...
-* Here we are presetting argument...
+```html
+<input type="text" onkeyup="getdata()"/>
+```
+* This getdata function will calls API for every keyup event.. that is not good actually..
 ```js
-let multiply = function(x,y){
-    console.log(x*y)
+function getdata(){
+    // lets say we are calls an API and gets data.
+    console.log("Fetching data...");
 }
-// here we are passing x=2;
-let multiplyByTwo = multiply.bind(this,2)
-// here we are passing y=3
-multiplyByTwo(3);
-// output : 6
 ```
-
-* Suppose we pass both x and y on bind itself, it will take that value.
+* To solve the above problem we should call getdata only when user paused typing ..
+* for example lets say 300 milli seconds... if only the difference between user keystroke is 300ms then we can call getdata
 ```jsx
-// here we are passing x=2 and y =7
-let multiplyByTwo = multiply.bind(this,2,7)
-// here again we are trying passing y=8
-multiplyByTwo(3);
-//output : 14
-```
-* In the above example it will ignore 3 and it assume y=7 , so first prefernce will be given to binding arguments.
 
-```js
-let multiplyByeight = multiply.bind(this)
-// here  we are trying passing both x and y
-multiplyByeight(2,8);
-//output : 16
-```
 
-### Method 2 - closure method
+// Instead of calling getdata immediately we will wait for certain delay time and after that we can call the functiobn
+const dosomeMaggic = function(getdata, delayTime){
+    // Initialising the timer..
+    let timer
+    return function(){
+        // maintaing context and arguments required to keep a check that the environment or lexical scope where the function is running is correct and same getdata function is called with same arguments (** if it had);
+        let context = this;
+        args = arguments;
+        // if again keystore happens we should stop calling this method , for that we have to use clear timeout. ie if we cleared the timer getdata will not be called..
+        clearTimeout(timer);
 
-* This is the simple example for closure... in this function when a new function is return, the retun function has access to X variable even after returning..
-* It is something like presetting x value over return function.
-* In more easy explaination is just imagine we are creating a box in which both x and this return function exist.
-```js
-let multiplyUsingClosure = function(x){
-    return function(y){
-        console.log(x*y);
+        // timer will be called if it expires the 300ms
+        timer = setTimeout(()=>{
+            // here we can't directly call getdata() like this ... to fix our "this" variable and context we have to use apply here
+            getdata.apply(context,args)
+        },delayTime)
     }
 }
 
-let multiplyByclosure = multiplyUsingClosure(2);
-    multiplyByclosure(5);
-let multiplyByclosureNew = multiplyUsingClosure(2);
-    multiplyByclosureNew(10);
 
-//output: 10
+// this betterFunction will be called on each and every keypress event.
+const betterFunction = dosomeMaggic(getdata, 300);
+
 ```
+* This betterFunction should be called on Keyup instead of getdata in html

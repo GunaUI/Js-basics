@@ -1,28 +1,24 @@
-// Method 1 : Bind method.
-let multiplyUsingBind = function(x,y){
-    console.log(x*y)
+// Debouncing in javascript
+let counter =0
+function getdata(){
+    // lets say we are calls an API and gets data.
+    console.log("Fetching data...", ++counter);
 }
 
-let multiplyByTwo = multiplyUsingBind.bind(this,2)
-multiplyByTwo(3);
 
-let multiplyBythree = multiplyUsingBind.bind(this,2,7);
-multiplyBythree(8);
+const dosomeMaggic = function(getdata, delayTime){
+    let timer
+    return function(){
 
-let multiplyByeight = multiplyUsingBind.bind(this)
-// here again we are trying passing y=8
-multiplyByeight(2,8);
+        let context = this;
+        args = arguments;
 
-// Method 2 - Closure method.
+        clearTimeout(timer);
 
-let multiplyUsingClosure = function(x){
-    return function(y){
-        console.log(x*y);
+        timer = setTimeout(()=>{
+            getdata.apply(context,args)
+        },delayTime)
     }
 }
 
-let multiplyByclosure = multiplyUsingClosure(2);
-    multiplyByclosure(5);
-
-let multiplyByclosureNew = multiplyUsingClosure(2);
-    multiplyByclosureNew(10);
+const betterFunction = dosomeMaggic(getdata, 300);
