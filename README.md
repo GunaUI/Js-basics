@@ -19,7 +19,7 @@ function getdata(){
 
 
 // Instead of calling getdata immediately we will wait for certain delay time and after that we can call the functiobn
-const dosomeMaggic = function(getdata, delayTime){
+const debounce = function(getdata, delayTime){
     // Initialising the timer..
     let timer
     return function(){
@@ -39,7 +39,8 @@ const dosomeMaggic = function(getdata, delayTime){
 
 
 // this betterFunction will be called on each and every keypress event.
-const betterFunction = dosomeMaggic(getdata, 300);
+const betterFunction = debounce(getdata, 300);
 
 ```
 * This betterFunction should be called on Keyup instead of getdata in html
+* This will imporveour application performance, we can use the debounce method in other places where ever it applies, like scroll event, resize window....

@@ -6,7 +6,7 @@ function getdata(){
 }
 
 
-const dosomeMaggic = function(getdata, delayTime){
+const debounce = function(getdata, delayTime){
     let timer
     return function(){
 
@@ -21,4 +21,4 @@ const dosomeMaggic = function(getdata, delayTime){
     }
 }
 
-const betterFunction = dosomeMaggic(getdata, 300);
+const betterFunction = debounce(getdata, 300);
