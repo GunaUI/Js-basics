@@ -18,3 +18,6 @@
 * In defer scenario, HTML parsing will not stopped even after it met the script tag, it will continue download but HTML Parse won't stopped... it will continue, once HTML Parse done it will start executing the script.
 
 <img width="884" alt="Screen Shot 2019-04-08 at 5 50 22 PM" src="https://user-images.githubusercontent.com/22883945/55728566-eb5abb00-5a31-11e9-91fa-7035ac504fcd.png">
+
+<img width="607" alt="Screen Shot 2019-04-08 at 7 23 31 PM" src="https://user-images.githubusercontent.com/22883945/55729504-e0a12580-5a33-11e9-86f1-6097590aae34.png">
+
