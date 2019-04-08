@@ -1,46 +1,20 @@
 # Js-basics
 
-## Debouncing 
-* Suppose if your are searching in a website... if the api call is made on every key press means this will create a major performance issue.
+## Async Vs Defer
+* Async and Defer are boolean attributes which are used along with script tag to load the external script efficiently into our page..
+* Normally when you load a webpage, there are two major things happening in your browser..
+    * HTML Parsing
+    * Loading of the script
+        * Fetching the script from the network 
+        * Executing the script line by line
 
-```html
-<input type="text" onkeyup="getdata()"/>
-```
-* This getdata function will calls API for every keyup event.. that is not good actually..
-```js
-function getdata(){
-    // lets say we are calls an API and gets data.
-    console.log("Fetching data...");
-}
-```
-* To solve the above problem we should call getdata only when user paused typing ..
-* for example lets say 300 milli seconds... if only the difference between user keystroke is 300ms then we can call getdata
-```jsx
+### Normal Scenario
+* In the normal scenario it will parsing the HTML , when this HTML met script tag, it will pause the HTML parsing, immediately it will start downloading the script then it will execute , after complete the entire script execution it will start parsing the HTML again from where it stops.. This is not a good case.
 
+### Async Scenario
+* In async scenario, it will parsing the HTML , when this HTML met script tag, it will start downloading script simultaneously with the HTML parsing. once the script downloaded completely. it will pause HTML parsing and start executing the script. once the script execution done it will continue the HTML parsing .
 
-// Instead of calling getdata immediately we will wait for certain delay time and after that we can call the functiobn
-const debounce = function(getdata, delayTime){
-    // Initialising the timer..
-    let timer
-    return function(){
-        // maintaing context and arguments required to keep a check that the environment or lexical scope where the function is running is correct and same getdata function is called with same arguments (** if it had);
-        let context = this;
-        args = arguments;
-        // if again keystore happens we should stop calling this method , for that we have to use clear timeout. ie if we cleared the timer getdata will not be called..
-        clearTimeout(timer);
+### Defer Scenario
+* In defer scenario, HTML parsing will not stopped even after it met the script tag, it will continue download but HTML Parse won't stopped... it will continue, once HTML Parse done it will start executing the script.
 
-        // timer will be called if it expires the 300ms
-        timer = setTimeout(()=>{
-            // here we can't directly call getdata() like this ... to fix our "this" variable and context we have to use apply here
-            getdata.apply(context,args)
-        },delayTime)
-    }
-}
-
-
-// this betterFunction will be called on each and every keypress event.
-const betterFunction = debounce(getdata, 300);
-
-```
-* This betterFunction should be called on Keyup instead of getdata in html
-* This will imporveour application performance, we can use the debounce method in other places where ever it applies, like scroll event, resize window....
+<img width="884" alt="Screen Shot 2019-04-08 at 5 50 22 PM" src="https://user-images.githubusercontent.com/22883945/55728566-eb5abb00-5a31-11e9-91fa-7035ac504fcd.png">
