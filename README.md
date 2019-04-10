@@ -1,108 +1,53 @@
 # Js-basics
 
-## Bubbling and Capturing aka Trickling
+## Event delegation
 
-* Bubbling and capturing are the two way of event propagation in the DOM tree
-* Suppose we have a div structre like below
-```html
-    <div id="grandparent">
-        <div id="parent">
-            <div id="child"></div>
-        </div>
-    </div>
+* Event delegation is the method of handling events in the better way.
+* Event delegation is based up on event bubbling. Just because event bubbling exist event delegation also exist.
+* Event delegation gave us the better way of handling the event listeners.
+* Suppose we need to add events to n number of list element . Instead of adding events to all the list elements we could add a single event to the parent of the list and then from that parents listener we could delegate as the listener to the child list element this is called event delegation.
+* for example
+```js
+<ul id="category">
+    <li id="laptops">laptops</li>
+    <li id="cameras">cameras</li>
+    <li id="shoes">shoes</li>
+</ul>
+
+document.querySelector("#category").addEventListener('click', (e) => {
+    console.log(e.target);
+    if (e.target.tagName == 'LI') {
+        window.location.href = "/" + e.target.id;
+    }
+});
 ```
-* Onclick method of child will trigger child method... Onclick method of parent will trigger parent method.. Onclick method of grandparent will trigger grandparent method.
-
-### Event Bubbling
-
-* In case of event bubbling the onlcick child method will be called first and then it will move upwards to the parent and then to grandparent.ie it will go directly till the end of the DOM. For your rememeberence we could imagine that bubble always comes out... so that you won't forget.
-
-* Here from element you clicked to the top DOM.
+* here single event added to category id , so that we could avoid each seperate listeners to all li element. we could access the clikced child element using "e.target" property.
+* Example 2
+```js
+<div id="form">
+    <input type="text" id="name" data-uppercase>
+    <input type="text" id="pan">
+    <input type="text" id="mobile" data-uppercase>
+</div>
+```
+* data-uppercase is user defined attribute.. if you log event.target in your js you could clearly see this user defined attribute (uppercase) in dataset
 
 ```js
-    document.querySelector("#parent")
-        .addEventListener('click', (e) => {
-        console.log("Parent Clicked!");
-    }, false);
-```
-* here we didn't pass any value.
-```js
-    document.querySelector("#parent")
-        .addEventListener('click', (e) => {
-        console.log("Parent Clicked!");
-    });
-```
-
-
-### Event Capturing  aka Trickling
-
-* Event Capturing is opposite to bubbling, this Capturing also known as trickling which follows top down approach. It is capturing down the DOM tree. ie from top DOM to the element you clicked.
-
-```js
-    document.querySelector("#parent")
-        .addEventListener('click', (e) => {
-        console.log("Parent Clicked!");
-    }, true);
-```
-* Here "true" is use capture boolean argument, on the basis of use capture it will decide bubbling or capturing, if it is true means , it will take as capturing, if we don't pass any value or we pass a false value here the events will bubble up.
-
-### Note
-* This very costly operation this might cause performace issue like if we click child if it needs to propagate from top to the element we clicked.. to avoid this issue we could stop propagation at any time
-```js
-    document.querySelector("#grandparent")
-        .addEventListener('click', (e) => {
-        console.log("Grandparent Clicked!");
-        e.stopPropagation();
-    }, true);
+document.querySelector("#form").addEventListener('keyup', (e) => {
+    console.log(e);
+    if (e.target.dataset.uppercase != undefined) {
+        e.target.value = e.target.value.toUpperCase();
+    }
+})
 
 ```
-* after "stopPropagation" propagtion will be stopped , will it not propagate futher..
+* here we are delegating the uppercase functionality to any element which has data-uppercase attribute assigned. we have made this functionality once but we can resuse this to n number of child element.
 
-* if we combine both false and true value for use capture what will happen ??
+#### Benefit
+* Memory- it saves lot of memory
+* Writing less code
+* Dom manipulation- it will be tought to add element and then attach the listener.here we are attaching the event to the parent div
 
-```js
-
-    document.querySelector("#grandparent")
-        .addEventListener('click', (e) => {
-        console.log("Grandparent Clicked!");
-    }, true);
-
-    document.querySelector("#parent")
-        .addEventListener('click', (e) => {
-        console.log("Parent Clicked!");
-    }, false);
-
-    document.querySelector("#child")
-        .addEventListener('click', (e) => {
-        console.log("Child Clicked!");
-    }, true);
-
-    //output : Grandparent Clicked!
-    //         Child Clicked!
-    //         Parent Clicked!
-
-```
-* Here the first preference will be given to capturing down after that bubbling up will happen in second cycle.
-* if we click child on capturing cycle "Child Clicked!" and then in bubbling cycle " Parent Clicked! & Grandparent Clicked!" will be printed.
-```js
-
-    document.querySelector("#grandparent")
-        .addEventListener('click', (e) => {
-        console.log("Grandparent Clicked!");
-    }, false);
-
-    document.querySelector("#parent")
-        .addEventListener('click', (e) => {
-        console.log("Parent Clicked!");
-    }, false);
-
-    document.querySelector("#child")
-        .addEventListener('click', (e) => {
-        console.log("Child Clicked!");
-    }, true);
-
-    //output : Child Clicked!
-    //         Parent Clicked!
-    //         Grandparent Clicked!
-
-```
+#### Limitaion
+* All the events are not bubbled up example blur, focus, resizing of the window, scroll.... there are events which don't bubble up.
+* It won't work in case if you use stop propagation..
