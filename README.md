@@ -1,23 +1,108 @@
 # Js-basics
 
-## Async Vs Defer
-* Async and Defer are boolean attributes which are used along with script tag to load the external script efficiently into our page..
-* Normally when you load a webpage, there are two major things happening in your browser..
-    * HTML Parsing
-    * Loading of the script
-        * Fetching the script from the network 
-        * Executing the script line by line
+## Bubbling and Capturing aka Trickling
 
-### Normal Scenario
-* In the normal scenario it will parsing the HTML , when this HTML met script tag, it will pause the HTML parsing, immediately it will start downloading the script then it will execute , after complete the entire script execution it will start parsing the HTML again from where it stops.. This is not a good case.
+* Bubbling and capturing are the two way of event propagation in the DOM tree
+* Suppose we have a div structre like below
+```html
+    <div id="grandparent">
+        <div id="parent">
+            <div id="child"></div>
+        </div>
+    </div>
+```
+* Onclick method of child will trigger child method... Onclick method of parent will trigger parent method.. Onclick method of grandparent will trigger grandparent method.
 
-### Async Scenario
-* In async scenario, it will parsing the HTML , when this HTML met script tag, it will start downloading script simultaneously with the HTML parsing. once the script downloaded completely. it will pause HTML parsing and start executing the script. once the script execution done it will continue the HTML parsing .
+### Event Bubbling
 
-### Defer Scenario
-* In defer scenario, HTML parsing will not stopped even after it met the script tag, it will continue download but HTML Parse won't stopped... it will continue, once HTML Parse done it will start executing the script.
+* In case of event bubbling the onlcick child method will be called first and then it will move upwards to the parent and then to grandparent.ie it will go directly till the end of the DOM. For your rememeberence we could imagine that bubble always comes out... so that you won't forget.
 
-<img width="884" alt="Screen Shot 2019-04-08 at 5 50 22 PM" src="https://user-images.githubusercontent.com/22883945/55728566-eb5abb00-5a31-11e9-91fa-7035ac504fcd.png">
+* Here from element you clicked to the top DOM.
 
-<img width="607" alt="Screen Shot 2019-04-08 at 7 23 31 PM" src="https://user-images.githubusercontent.com/22883945/55729504-e0a12580-5a33-11e9-86f1-6097590aae34.png">
+```js
+    document.querySelector("#parent")
+        .addEventListener('click', (e) => {
+        console.log("Parent Clicked!");
+    }, false);
+```
+* here we didn't pass any value.
+```js
+    document.querySelector("#parent")
+        .addEventListener('click', (e) => {
+        console.log("Parent Clicked!");
+    });
+```
 
+
+### Event Capturing  aka Trickling
+
+* Event Capturing is opposite to bubbling, this Capturing also known as trickling which follows top down approach. It is capturing down the DOM tree. ie from top DOM to the element you clicked.
+
+```js
+    document.querySelector("#parent")
+        .addEventListener('click', (e) => {
+        console.log("Parent Clicked!");
+    }, true);
+```
+* Here "true" is use capture boolean argument, on the basis of use capture it will decide bubbling or capturing, if it is true means , it will take as capturing, if we don't pass any value or we pass a false value here the events will bubble up.
+
+### Note
+* This very costly operation this might cause performace issue like if we click child if it needs to propagate from top to the element we clicked.. to avoid this issue we could stop propagation at any time
+```js
+    document.querySelector("#grandparent")
+        .addEventListener('click', (e) => {
+        console.log("Grandparent Clicked!");
+        e.stopPropagation();
+    }, true);
+
+```
+* after "stopPropagation" propagtion will be stopped , will it not propagate futher..
+
+* if we combine both false and true value for use capture what will happen ??
+
+```js
+
+    document.querySelector("#grandparent")
+        .addEventListener('click', (e) => {
+        console.log("Grandparent Clicked!");
+    }, true);
+
+    document.querySelector("#parent")
+        .addEventListener('click', (e) => {
+        console.log("Parent Clicked!");
+    }, false);
+
+    document.querySelector("#child")
+        .addEventListener('click', (e) => {
+        console.log("Child Clicked!");
+    }, true);
+
+    //output : Grandparent Clicked!
+    //         Child Clicked!
+    //         Parent Clicked!
+
+```
+* Here the first preference will be given to capturing down after that bubbling up will happen in second cycle.
+* if we click child on capturing cycle "Child Clicked!" and then in bubbling cycle " Parent Clicked! & Grandparent Clicked!" will be printed.
+```js
+
+    document.querySelector("#grandparent")
+        .addEventListener('click', (e) => {
+        console.log("Grandparent Clicked!");
+    }, false);
+
+    document.querySelector("#parent")
+        .addEventListener('click', (e) => {
+        console.log("Parent Clicked!");
+    }, false);
+
+    document.querySelector("#child")
+        .addEventListener('click', (e) => {
+        console.log("Child Clicked!");
+    }, true);
+
+    //output : Child Clicked!
+    //         Parent Clicked!
+    //         Grandparent Clicked!
+
+```
