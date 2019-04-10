@@ -1,53 +1,50 @@
 # Js-basics
 
-## Event delegation
+## Amazon Interview Question
 
-* Event delegation is the method of handling events in the better way.
-* Event delegation is based up on event bubbling. Just because event bubbling exist event delegation also exist.
-* Event delegation gave us the better way of handling the event listeners.
-* Suppose we need to add events to n number of list element . Instead of adding events to all the list elements we could add a single event to the parent of the list and then from that parents listener we could delegate as the listener to the child list element this is called event delegation.
-* for example
+* Question: Can you write code for this function: sum(a)(b)(c)....( n)(). This should return the sum of a+b+c....+n.
+
+* In javascript we can pass a function as a argument to another function, even we can return a function from a function for eg
 ```js
-<ul id="category">
-    <li id="laptops">laptops</li>
-    <li id="cameras">cameras</li>
-    <li id="shoes">shoes</li>
-</ul>
+let x = func(){
 
-document.querySelector("#category").addEventListener('click', (e) => {
-    console.log(e.target);
-    if (e.target.tagName == 'LI') {
-        window.location.href = "/" + e.target.id;
+}
+function chumma(x){
+    return x
+}
+function chumma2(){
+    return func(){
+
     }
-});
+}
 ```
-* here single event added to category id , so that we could avoid each seperate listeners to all li element. we could access the clikced child element using "e.target" property.
-* Example 2
+* Solution for the above problem sum(a)(b)(c) is recursive function..
 ```js
-<div id="form">
-    <input type="text" id="name" data-uppercase>
-    <input type="text" id="pan">
-    <input type="text" id="mobile" data-uppercase>
-</div>
+let sum = func(a){
+            return func(b){
+                return func(c){
+                    return a+b+c
+                }
+            }
+        }
 ```
-* data-uppercase is user defined attribute.. if you log event.target in your js you could clearly see this user defined attribute (uppercase) in dataset
-
+* in more simplefied way .
 ```js
-document.querySelector("#form").addEventListener('keyup', (e) => {
-    console.log(e);
-    if (e.target.dataset.uppercase != undefined) {
-        e.target.value = e.target.value.toUpperCase();
-    }
-})
-
+let resursiveSum = func(a){
+            return func(b){
+                if(b) {
+                    return resursiveSum(a+b);
+                }else{
+                    return resursiveSum(a);
+                }
+            }
+        }
 ```
-* here we are delegating the uppercase functionality to any element which has data-uppercase attribute assigned. we have made this functionality once but we can resuse this to n number of child element.
+* we have to continue the same recursive sum till we don't find an argument.
 
-#### Benefit
-* Memory- it saves lot of memory
-* Writing less code
-* Dom manipulation- it will be tought to add element and then attach the listener.here we are attaching the event to the parent div
+## Solution in ES6 syntax
+```js
+let sum = a => b => b ? sum(a + b) : a;
+console.log(sum(10)(20)(3)(4)());
+```
 
-#### Limitaion
-* All the events are not bubbled up example blur, focus, resizing of the window, scroll.... there are events which don't bubble up.
-* It won't work in case if you use stop propagation..
