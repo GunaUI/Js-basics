@@ -1,53 +1,61 @@
 # Js-basics
 
-## Event delegation
-
-* Event delegation is the method of handling events in the better way.
-* Event delegation is based up on event bubbling. Just because event bubbling exist event delegation also exist.
-* Event delegation gave us the better way of handling the event listeners.
-* Suppose we need to add events to n number of list element . Instead of adding events to all the list elements we could add a single event to the parent of the list and then from that parents listener we could delegate as the listener to the child list element this is called event delegation.
-* for example
+## Protypal Inheritance
+* Inheritance is one object trying to access the properties and methods of another object.
+* In javascript everything is object. eg: array, object access to lot of predefined properties and methods how ??
+* There is something known as prototype , here prototype into picture.(.__proto__.)
 ```js
-<ul id="category">
-    <li id="laptops">laptops</li>
-    <li id="cameras">cameras</li>
-    <li id="shoes">shoes</li>
-</ul>
-
-document.querySelector("#category").addEventListener('click', (e) => {
-    console.log(e.target);
-    if (e.target.tagName == 'LI') {
-        window.location.href = "/" + e.target.id;
-    }
-});
+let arr = ["test1", "test2"]
+console(arr.__proto.__);
+console(Array.prototype);
 ```
-* here single event added to category id , so that we could avoid each seperate listeners to all li element. we could access the clikced child element using "e.target" property.
-* Example 2
+* object's protype is object, if you check object's protype's protype that will return null
 ```js
-<div id="form">
-    <input type="text" id="name" data-uppercase>
-    <input type="text" id="pan">
-    <input type="text" id="mobile" data-uppercase>
-</div>
+console(object.__proto__)
+// object
+console(object.__proto__.__proto__) // aka console(object.prototype.__proto__) 
+//null
 ```
-* data-uppercase is user defined attribute.. if you log event.target in your js you could clearly see this user defined attribute (uppercase) in dataset
+* In javascript everything array , object, function.... everything is object.
 
 ```js
-document.querySelector("#form").addEventListener('keyup', (e) => {
-    console.log(e);
-    if (e.target.dataset.uppercase != undefined) {
-        e.target.value = e.target.value.toUpperCase();
-    }
-})
+let object1 = {
+    name: "Aadvik",
+    age : "1",
+    height: "2feet",
+    city: "chennai"
+}
+
+let object2 = {
+    name: "krishna",
+}
+// Never do this , just for undestanding 
+object2.__proto__ = object1;
+console.log(object2.__proto__)
+//{
+    name: "krishna",
+    age : "1",
+    height: "2feet",
+    city: "chennai"
+}
 
 ```
-* here we are delegating the uppercase functionality to any element which has data-uppercase attribute assigned. we have made this functionality once but we can resuse this to n number of child element.
+* if we try to access city property in object2, it will check object2 , in case if it doesn't find anything it will go to the proto, there also if it doesn't find anything it will go to the proto's proto... it will goes through out the chain,
 
-#### Benefit
-* Memory- it saves lot of memory
-* Writing less code
-* Dom manipulation- it will be tought to add element and then attach the listener.here we are attaching the event to the parent div
+```js
+Function.prototype.mybind=function(){
+    console.log("mybind method called");
+}
+function test(){
 
-#### Limitaion
-* All the events are not bubbled up example blur, focus, resizing of the window, scroll.... there are events which don't bubble up.
-* It won't work in case if you use stop propagation..
+}
+function test2(){
+
+}
+
+test.mybind()
+// mybind method called
+test2.mybind()
+// mybind method called
+```
+* After the above change all function have access to mybind method.. because mybind method added to function's prototype.
